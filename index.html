@@ -14,6 +14,8 @@
     --accent-soft:#e74c3c;
     --line:#e0ddd4;
     --card:#ffffff;
+    --green:#1e8449;
+    --green-bg:#eafaf1;
     --shadow: rgba(26,26,46,0.08);
     --shadow-md: rgba(26,26,46,0.16);
   }
@@ -47,19 +49,16 @@
   }
   .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
     gap:28px;
   }
   .card{
-    display:block;
     background:var(--card);
     border:1px solid var(--line);
     border-radius:6px;
-    padding:28px 26px;
-    text-decoration:none;
-    color:inherit;
+    padding:26px 26px 22px;
     box-shadow:0 2px 10px var(--shadow);
-    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    transition:box-shadow .15s ease, border-color .15s ease;
     position:relative;
     overflow:hidden;
   }
@@ -69,16 +68,11 @@
     top:0; left:0; right:0;
     height:4px;
     background:var(--accent);
-    transform:scaleX(0);
-    transform-origin:left;
-    transition:transform .2s ease;
   }
   .card:hover{
-    transform:translateY(-4px);
     box-shadow:0 10px 24px var(--shadow-md);
     border-color:var(--accent-soft);
   }
-  .card:hover::before{ transform:scaleX(1); }
   .card .tag{
     display:inline-block;
     font-family:"Helvetica Neue",Arial,sans-serif;
@@ -88,24 +82,107 @@
     background:#fdf3f2;
     border-radius:3px;
     padding:3px 9px;
-    margin-bottom:14px;
+    margin-bottom:12px;
   }
   .card h2{
     font-size:1.3rem;
-    margin-bottom:8px;
+    margin-bottom:4px;
   }
-  .card p{
+  .card .count{
+    display:block;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.78rem;
+    color:var(--ink-muted);
+    margin-bottom:12px;
+  }
+  .card .desc{
     font-family:"Helvetica Neue",Arial,sans-serif;
     font-size:0.88rem;
     color:var(--ink-soft);
+    margin-bottom:20px;
   }
-  .card .arrow{
-    display:inline-block;
-    margin-top:16px;
+
+  /* progress */
+  .progress-section{
+    border-top:1px dashed var(--line);
+    padding-top:16px;
+    margin-bottom:18px;
+  }
+  .progress-label{
+    display:flex;
+    justify-content:space-between;
     font-family:"Helvetica Neue",Arial,sans-serif;
-    font-size:0.82rem;
-    color:var(--ink-muted);
+    font-size:0.76rem;
+    color:var(--ink-soft);
+    margin-bottom:6px;
   }
+  .progress-label .num{ font-variant-numeric:tabular-nums; font-weight:700; }
+  .progress-track{
+    height:8px;
+    background:var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    margin-bottom:12px;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:4px;
+    transition:width .3s ease;
+  }
+  .progress-fill.done{ background:var(--green); }
+  .progress-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .step-btn{
+    width:28px; height:28px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:4px;
+    font-size:1rem;
+    cursor:pointer;
+    color:var(--ink-soft);
+    font-family:"Helvetica Neue",Arial,sans-serif;
+  }
+  .step-btn:hover{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .lesson-input{
+    width:52px;
+    text-align:center;
+    padding:5px 2px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.85rem;
+  }
+  .complete-btn{
+    margin-left:auto;
+    padding:6px 12px;
+    border:1px solid var(--green);
+    background:var(--green-bg);
+    color:var(--green);
+    border-radius:4px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.76rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .complete-btn:hover{ background:var(--green); color:#fff; }
+  .complete-btn.done{ background:var(--green); color:#fff; }
+
+  .enter-btn{
+    display:inline-block;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.85rem;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid var(--ink);
+    padding-bottom:1px;
+  }
+  .enter-btn:hover{ color:var(--accent); border-color:var(--accent); }
+
   footer{
     text-align:center;
     padding:32px 24px 48px;
@@ -119,25 +196,57 @@
 
 <header>
   <h1>自主學習站</h1>
-  <p>Learning Hub — 點選卡片進入課程</p>
+  <p>Learning Hub — 點選卡片進入課程，進度會存在這台裝置的瀏覽器裡</p>
 </header>
 
 <main>
-  <div class="grid">
+  <div class="grid" id="courseGrid">
 
-    <a class="card" href="binary-logic-gates_10.html">
+    <div class="card" data-course-id="binary" data-total="30" data-href="binary-logic-gates_10.html">
       <span class="tag">電腦科學</span>
       <h2>電腦二進位與邏輯閘</h2>
-      <p>從二進位數字系統到邏輯閘電路的完整教學。</p>
-      <span class="arrow">進入課程 →</span>
-    </a>
+      <span class="count">共 30 回（目前已上線 10 回，其餘陸續更新）</span>
+      <p class="desc">從二進位數字系統、布林代數到邏輯閘電路，一路講到 CPU 運作原理的完整教學。</p>
 
-    <a class="card" href="aviation-60-lessons_1.html">
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>目前進度</span>
+          <span class="num"><span class="cur-num">0</span> / 30</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+        <div class="progress-controls">
+          <button class="step-btn" data-action="dec">−</button>
+          <input type="number" class="lesson-input" min="0" max="30" value="0">
+          <button class="step-btn" data-action="inc">+</button>
+          <button class="complete-btn">標記完成</button>
+        </div>
+      </div>
+
+      <a class="enter-btn" href="binary-logic-gates_10.html">進入課程 →</a>
+    </div>
+
+    <div class="card" data-course-id="aviation" data-total="60" data-href="aviation-60-lessons_1.html">
       <span class="tag">航空學</span>
       <h2>航空學 60 回</h2>
-      <p>涵蓋航空基礎知識的 60 回自主學習課程。</p>
-      <span class="arrow">進入課程 →</span>
-    </a>
+      <span class="count">共 60 回（目前已上線 2 回，其餘陸續更新）</span>
+      <p class="desc">涵蓋飛行物理、航空系統、法規與安全文化的 60 回自主學習課程。</p>
+
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>目前進度</span>
+          <span class="num"><span class="cur-num">0</span> / 60</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+        <div class="progress-controls">
+          <button class="step-btn" data-action="dec">−</button>
+          <input type="number" class="lesson-input" min="0" max="60" value="0">
+          <button class="step-btn" data-action="inc">+</button>
+          <button class="complete-btn">標記完成</button>
+        </div>
+      </div>
+
+      <a class="enter-btn" href="aviation-60-lessons_1.html">進入課程 →</a>
+    </div>
 
   </div>
 </main>
@@ -145,6 +254,59 @@
 <footer>
   自主學習站 · 持續更新中
 </footer>
+
+<script>
+(function(){
+  var STORAGE_PREFIX = 'learninghub_progress_';
+
+  document.querySelectorAll('.card').forEach(function(card){
+    var id = card.dataset.courseId;
+    var total = parseInt(card.dataset.total, 10);
+    var key = STORAGE_PREFIX + id;
+
+    var input = card.querySelector('.lesson-input');
+    var fill = card.querySelector('.progress-fill');
+    var curNum = card.querySelector('.cur-num');
+    var completeBtn = card.querySelector('.complete-btn');
+    var decBtn = card.querySelector('[data-action="dec"]');
+    var incBtn = card.querySelector('[data-action="inc"]');
+
+    function load(){
+      var v = parseInt(localStorage.getItem(key), 10);
+      if (isNaN(v)) v = 0;
+      return Math.min(Math.max(v, 0), total);
+    }
+
+    function render(v){
+      input.value = v;
+      curNum.textContent = v;
+      var pct = total > 0 ? (v / total * 100) : 0;
+      fill.style.width = pct + '%';
+      var isDone = v >= total;
+      fill.classList.toggle('done', isDone);
+      completeBtn.classList.toggle('done', isDone);
+      completeBtn.textContent = isDone ? '已完成 ✓' : '標記完成';
+    }
+
+    function save(v){
+      v = Math.min(Math.max(v, 0), total);
+      localStorage.setItem(key, v);
+      render(v);
+    }
+
+    render(load());
+
+    decBtn.addEventListener('click', function(){ save(load() - 1); });
+    incBtn.addEventListener('click', function(){ save(load() + 1); });
+    input.addEventListener('change', function(){
+      var v = parseInt(input.value, 10);
+      if (isNaN(v)) v = 0;
+      save(v);
+    });
+    completeBtn.addEventListener('click', function(){ save(total); });
+  });
+})();
+</script>
 
 </body>
 </html>
