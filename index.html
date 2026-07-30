@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自主學習站 | 學習入口</title>
+<style>
+  :root{
+    --paper:#fafaf7;
+    --ink:#1a1a2e;
+    --ink-soft:#4a4a5e;
+    --ink-muted:#8888aa;
+    --accent:#c0392b;
+    --accent-soft:#e74c3c;
+    --line:#e0ddd4;
+    --card:#ffffff;
+    --shadow: rgba(26,26,46,0.08);
+    --shadow-md: rgba(26,26,46,0.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Noto Serif TC","PMingLiU","Georgia",serif;
+    line-height:1.75;
+    min-height:100vh;
+  }
+  header{
+    padding:64px 24px 40px;
+    text-align:center;
+    border-bottom:2px solid var(--ink);
+  }
+  header h1{
+    font-size:2.1rem;
+    letter-spacing:2px;
+    margin-bottom:10px;
+  }
+  header p{
+    color:var(--ink-soft);
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.95rem;
+  }
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:28px;
+  }
+  .card{
+    display:block;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px 26px;
+    text-decoration:none;
+    color:inherit;
+    box-shadow:0 2px 10px var(--shadow);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:4px;
+    background:var(--accent);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .2s ease;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 24px var(--shadow-md);
+    border-color:var(--accent-soft);
+  }
+  .card:hover::before{ transform:scaleX(1); }
+  .card .tag{
+    display:inline-block;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.72rem;
+    letter-spacing:1px;
+    color:var(--accent);
+    background:#fdf3f2;
+    border-radius:3px;
+    padding:3px 9px;
+    margin-bottom:14px;
+  }
+  .card h2{
+    font-size:1.3rem;
+    margin-bottom:8px;
+  }
+  .card p{
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.88rem;
+    color:var(--ink-soft);
+  }
+  .card .arrow{
+    display:inline-block;
+    margin-top:16px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.82rem;
+    color:var(--ink-muted);
+  }
+  footer{
+    text-align:center;
+    padding:32px 24px 48px;
+    font-family:"Helvetica Neue",Arial,sans-serif;
+    font-size:0.78rem;
+    color:var(--ink-muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>自主學習站</h1>
+  <p>Learning Hub — 點選卡片進入課程</p>
+</header>
+
+<main>
+  <div class="grid">
+
+    <a class="card" href="binary-logic-gates_10.html">
+      <span class="tag">電腦科學</span>
+      <h2>電腦二進位與邏輯閘</h2>
+      <p>從二進位數字系統到邏輯閘電路的完整教學。</p>
+      <span class="arrow">進入課程 →</span>
+    </a>
+
+    <a class="card" href="aviation-60-lessons_1.html">
+      <span class="tag">航空學</span>
+      <h2>航空學 60 回</h2>
+      <p>涵蓋航空基礎知識的 60 回自主學習課程。</p>
+      <span class="arrow">進入課程 →</span>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  自主學習站 · 持續更新中
+</footer>
+
+</body>
+</html>
