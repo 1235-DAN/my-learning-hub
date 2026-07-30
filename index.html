@@ -196,7 +196,7 @@
 
 <header>
   <h1>自主學習站</h1>
-  <p>Learning Hub — 點選卡片進入課程，進度會存在這台裝置的瀏覽器裡</p>
+  <p>Learning Hub — 點選卡片進入課程，進度會即時同步到雲端（Firebase）</p>
 </header>
 
 <main>
@@ -255,9 +255,25 @@
   自主學習站 · 持續更新中
 </footer>
 
-<script>
-(function(){
-  var STORAGE_PREFIX = 'learninghub_progress_';
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCRWZc9Wrpgr5z8eAQPnoVPFe50e-ergqo",
+    authDomain: "learning-hub-47119.firebaseapp.com",
+    projectId: "learning-hub-47119",
+    storageBucket: "learning-hub-47119.firebasestorage.app",
+    messagingSenderId: "517942857382",
+    appId: "1:517942857382:web:e95c5067782a178c336e67"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const progressRef = doc(db, "learninghub", "progress");
+
+  const STORAGE_PREFIX = 'learninghub_progress_';
+  const cardMap = {};
 
   document.querySelectorAll('.card').forEach(function(card){
     var id = card.dataset.courseId;
@@ -271,13 +287,8 @@
     var decBtn = card.querySelector('[data-action="dec"]');
     var incBtn = card.querySelector('[data-action="inc"]');
 
-    function load(){
-      var v = parseInt(localStorage.getItem(key), 10);
-      if (isNaN(v)) v = 0;
-      return Math.min(Math.max(v, 0), total);
-    }
-
     function render(v){
+      v = Math.min(Math.max(v, 0), total);
       input.value = v;
       curNum.textContent = v;
       var pct = total > 0 ? (v / total * 100) : 0;
@@ -288,24 +299,43 @@
       completeBtn.textContent = isDone ? '已完成 ✓' : '標記完成';
     }
 
-    function save(v){
+    // 先用本機快取畫面，避免等雲端回應時畫面空白
+    var cached = parseInt(localStorage.getItem(key), 10);
+    if (isNaN(cached)) cached = 0;
+    render(cached);
+
+    function commit(v){
       v = Math.min(Math.max(v, 0), total);
       localStorage.setItem(key, v);
       render(v);
+      var payload = {};
+      payload[id] = v;
+      setDoc(progressRef, payload, { merge: true }).catch(function(err){
+        console.error('Firestore 同步失敗', err);
+      });
     }
 
-    render(load());
+    decBtn.addEventListener('click', function(){ commit((parseInt(input.value,10)||0) - 1); });
+    incBtn.addEventListener('click', function(){ commit((parseInt(input.value,10)||0) + 1); });
+    input.addEventListener('change', function(){ commit(parseInt(input.value, 10) || 0); });
+    completeBtn.addEventListener('click', function(){ commit(total); });
 
-    decBtn.addEventListener('click', function(){ save(load() - 1); });
-    incBtn.addEventListener('click', function(){ save(load() + 1); });
-    input.addEventListener('change', function(){
-      var v = parseInt(input.value, 10);
-      if (isNaN(v)) v = 0;
-      save(v);
-    });
-    completeBtn.addEventListener('click', function(){ save(total); });
+    cardMap[id] = { key: key, render: render };
   });
-})();
+
+  // 即時監聽雲端資料：換裝置或別的分頁更新進度時，這裡會自動同步
+  onSnapshot(progressRef, function(snap){
+    if (!snap.exists()) return;
+    var data = snap.data();
+    Object.keys(cardMap).forEach(function(id){
+      if (typeof data[id] === 'number') {
+        localStorage.setItem(cardMap[id].key, data[id]);
+        cardMap[id].render(data[id]);
+      }
+    });
+  }, function(err){
+    console.error('Firestore 監聽失敗', err);
+  });
 </script>
 
 </body>
